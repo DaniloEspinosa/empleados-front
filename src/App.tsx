@@ -2,27 +2,35 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-
 import Swal from "sweetalert2";
 
+interface Empleado {
+  _id: number;
+  nombre: string;
+  edad: number;
+  pais: string;
+  cargo: string;
+  anios: number;
+}
+
 function App() {
-  const [nombre, setNombre] = useState("");
-  const [edad, setEdad] = useState(0);
-  const [pais, setPais] = useState("");
-  const [cargo, setCargo] = useState("");
-  const [anios, setAnios] = useState(0);
-  const [id, setId] = useState(0);
-  const [empleadosList, setEmpleadosList] = useState([]);
-  const [editar, setEditar] = useState(false);
+  const [nombre, setNombre] = useState<string>("");
+  const [edad, setEdad] = useState<number>(0);
+  const [pais, setPais] = useState<string>("");
+  const [cargo, setCargo] = useState<string>("");
+  const [anios, setAnios] = useState<number>(0);
+  const [id, setId] = useState<number>(0);
+  const [empleadosList, setEmpleadosList] = useState<Empleado[]>([]);
+  const [editar, setEditar] = useState<boolean>(false);
 
   const add = () => {
     axios
       .post("https://empleados-back.onrender.com/create", {
-        nombre: nombre,
-        edad: edad,
-        pais: pais,
-        cargo: cargo,
-        anios: anios,
+        nombre,
+        edad,
+        pais,
+        cargo,
+        anios,
       })
       .then(() => {
         getEmpleados();
@@ -38,7 +46,7 @@ function App() {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: JSON.parse(JSON.stringify(err)).message + ": intente mas tarde!",
+          text: JSON.stringify(err.message) + ": intente más tarde!",
         });
       });
   };
@@ -46,12 +54,12 @@ function App() {
   const update = () => {
     axios
       .put("https://empleados-back.onrender.com/update", {
-        id: id,
-        nombre: nombre,
-        edad: edad,
-        pais: pais,
-        cargo: cargo,
-        anios: anios,
+        id,
+        nombre,
+        edad,
+        pais,
+        cargo,
+        anios,
       })
       .then(() => {
         getEmpleados();
@@ -67,12 +75,12 @@ function App() {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: JSON.parse(JSON.stringify(err)).message + ": intente mas tarde!",
+          text: JSON.stringify(err.message) + ": intente más tarde!",
         });
       });
   };
 
-  const deleteEmpleado = (val) => {
+  const deleteEmpleado = (val: Empleado) => {
     Swal.fire({
       title: "Confirmar eliminado?",
       text: `Realmente desea eliminar a ${val.nombre}?`,
@@ -80,11 +88,11 @@ function App() {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Si, eliminarlo!",
+      confirmButtonText: "Sí, eliminarlo!",
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete("https://empleados-back.onrender.com/delete/" + val._id)
+          .delete(`https://empleados-back.onrender.com/delete/${val._id}`)
           .then(() => {
             getEmpleados();
             limpiarCampos();
@@ -99,8 +107,8 @@ function App() {
             Swal.fire({
               icon: "error",
               title: "Oops...",
-              text: "No se logro eliminar el empleado!",
-              footer: JSON.parse(JSON.stringify(err)).message,
+              text: "No se logró eliminar el empleado!",
+              footer: JSON.stringify(err.message),
             });
           });
       }
@@ -117,9 +125,8 @@ function App() {
     setEditar(false);
   };
 
-  const editarEmpleado = (val: any) => {
+  const editarEmpleado = (val: Empleado) => {
     setEditar(true);
-
     setNombre(val.nombre);
     setEdad(val.edad);
     setCargo(val.cargo);
@@ -136,10 +143,7 @@ function App() {
 
   useEffect(() => {
     getEmpleados();
-
-  }, [])
-  
-
+  }, []);
 
   return (
     <div className="container">
@@ -147,76 +151,56 @@ function App() {
         <div className="card-header">Gestión de empleados</div>
         <div className="card-body">
           <div className="input-group mb-3">
-            <span className="input-group-text" id="basic-addon1">
-              Nombre:
-            </span>
+            <span className="input-group-text">Nombre:</span>
             <input
               type="text"
               onChange={(e) => setNombre(e.target.value)}
               className="form-control"
               placeholder="Ingresa el nombre y apellido"
-              aria-label="Username"
-              aria-describedby="basic-addon1"
               value={nombre}
             />
           </div>
 
           <div className="input-group mb-3">
-            <span className="input-group-text" id="basic-addon2">
-              Edad:
-            </span>
+            <span className="input-group-text">Edad:</span>
             <input
               type="number"
-              onChange={(e) => setEdad(e.target.value)}
+              onChange={(e) => setEdad(Number(e.target.value))}
               className="form-control"
               placeholder="Ingresa la edad"
-              aria-label="Username"
-              aria-describedby="basic-addon2"
               value={edad}
             />
           </div>
 
           <div className="input-group mb-3">
-            <span className="input-group-text" id="basic-addon3">
-              País:
-            </span>
+            <span className="input-group-text">País:</span>
             <input
               type="text"
               onChange={(e) => setPais(e.target.value)}
               className="form-control"
-              placeholder="Ingresa el pais de nacimiento"
-              aria-label="Username"
-              aria-describedby="basic-addon3"
+              placeholder="Ingresa el país de nacimiento"
               value={pais}
             />
           </div>
 
           <div className="input-group mb-3">
-            <span className="input-group-text" id="basic-addon4">
-              Cargo:
-            </span>
+            <span className="input-group-text">Cargo:</span>
             <input
               type="text"
               onChange={(e) => setCargo(e.target.value)}
               className="form-control"
               placeholder="Ingresa el cargo"
-              aria-label="Username"
-              aria-describedby="basic-addon4"
               value={cargo}
             />
           </div>
 
           <div className="input-group mb-3">
-            <span className="input-group-text" id="basic-addon5">
-              Años de experiencia:
-            </span>
+            <span className="input-group-text">Años de experiencia:</span>
             <input
               type="number"
-              onChange={(e) => setAnios(e.target.value)}
+              onChange={(e) => setAnios(Number(e.target.value))}
               className="form-control"
               placeholder="Ingresa los años de experiencia"
-              aria-label="Username"
-              aria-describedby="basic-addon5"
               value={anios}
             />
           </div>
@@ -242,52 +226,36 @@ function App() {
       <table className="table table-striped mt-5">
         <thead>
           <tr>
-            <th scope="col">#</th>
-            <th scope="col">Nombre</th>
-            <th scope="col">Edad</th>
-            <th scope="col">Pais</th>
-            <th scope="col">Cargo</th>
-            <th scope="col">Experiencia</th>
-            <th scope="col">Acciones</th>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Edad</th>
+            <th>País</th>
+            <th>Cargo</th>
+            <th>Experiencia</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {empleadosList.map((item, key) => {
-            return (
-              <tr key={key}>
-                <th>{key  + 1}</th>
-                <td>{item.nombre}</td>
-                <td>{item.edad}</td>
-                <td>{item.pais}</td>
-                <td>{item.cargo}</td>
-                <td>{item.anios}</td>
-                <td>
-                  <div
-                    className="btn-group"
-                    role="group"
-                    aria-label="Basic example"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => editarEmpleado(item)}
-                      className="btn btn-info"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        deleteEmpleado(item);
-                      }}
-                      className="btn btn-danger"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
+          {empleadosList.map((item, key) => (
+            <tr key={item._id}>
+              <th>{key + 1}</th>
+              <td>{item.nombre}</td>
+              <td>{item.edad}</td>
+              <td>{item.pais}</td>
+              <td>{item.cargo}</td>
+              <td>{item.anios}</td>
+              <td>
+                <div className="btn-group">
+                  <button type="button" onClick={() => editarEmpleado(item)} className="btn btn-info">
+                    Editar
+                  </button>
+                  <button type="button" onClick={() => deleteEmpleado(item)} className="btn btn-danger">
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
