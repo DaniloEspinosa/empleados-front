@@ -165,10 +165,10 @@ function App() {
             <span className="input-group-text">Edad:</span>
             <input
               type="number"
-              onChange={(e) => setEdad(Number(e.target.value))}
+              onChange={(e) => setEdad(Number(e.target.value) || 0)}
               className="form-control"
-              placeholder="Ingresa la edad"
-              value={edad}
+              placeholder="Ingresa la edad (tiene que ser un número)"
+              value={edad === 0 ? "" : edad}
             />
           </div>
 
@@ -198,10 +198,10 @@ function App() {
             <span className="input-group-text">Años de experiencia:</span>
             <input
               type="number"
-              onChange={(e) => setAnios(Number(e.target.value))}
+              onChange={(e) => setAnios(Number(e.target.value) || 0)}
               className="form-control"
-              placeholder="Ingresa los años de experiencia"
-              value={anios}
+              placeholder="Ingresa los años de experiencia (tiene que ser un número)"
+              value={anios === 0 ? "" : anios}
             />
           </div>
         </div>
